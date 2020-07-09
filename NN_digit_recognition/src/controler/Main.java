@@ -6,6 +6,7 @@ package controler;
 import java.awt.EventQueue;
 import java.math.BigDecimal;
 
+import model.Extension;
 import view.MainWindow;
 
 /**
@@ -18,6 +19,8 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		
+		
 		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
