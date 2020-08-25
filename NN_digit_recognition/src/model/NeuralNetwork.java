@@ -2,13 +2,9 @@ package model;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.stream.Stream;
-
 import controler.Activable;
-import controler.BinaryStepUni;
 import controler.DataController;
 
 public class NeuralNetwork implements Serializable{
@@ -221,8 +217,9 @@ public class NeuralNetwork implements Serializable{
 					
 					for(int j = 0; j < outputLayer.getNeurons().length; j++) {
 						for(int k = 0; k < outputLayer.getNeurons()[j].getWeights().length; k++) {
-							outputLayer.getNeurons()[j].getWeights()[k] = outputLayer.getNeurons()[j].getWeights()[k] + (getLearningRate() * outputLayer.getNeurons()[j].neuronError * outputLayer.layerInput[k]);
-							//System.out.println("kttualizacja hidden layer" + getLearningRate() * outputLayer.getNeurons()[j].neuronError * outputLayer.layerInput[k]);
+							//System.out.println("przed aktualizacją output layer " + outputLayer.getNeurons()[j].getWeights()[k]);
+							outputLayer.getNeurons()[j].getWeights()[k] += (getLearningRate() * outputLayer.getNeurons()[j].neuronError * outputLayer.layerInput[k]);
+							//System.out.println("o ile się zmienia " + getLearningRate() * outputLayer.getNeurons()[j].neuronError * outputLayer.layerInput[k]);
 						}
 					}
 					

@@ -1,7 +1,6 @@
 package model;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Arrays;
 
 import controler.Activable;

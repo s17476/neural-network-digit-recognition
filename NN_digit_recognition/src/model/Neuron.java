@@ -106,15 +106,15 @@ public class Neuron implements Serializable{
 		}
 		if(bias) {
 			double random = new Random().nextDouble();
-			double result = ((int)(random * (5)))/100d;
+			double result = ((int)(random * (2)))/10d;
 			this.bias = result;
 		}
 	}
 	
 
 	
-	public static BigDecimal generateRandomBigDecimalFromRange(BigDecimal min, BigDecimal max) {
-	    return min.add(new BigDecimal(Math.random()).multiply(max.subtract(min)));
+	public static double generateRandomDoubleFromRange(double min, double max) {
+	    return min + (Math.random() * (max - min));
 	}
 	
 	public String toString() {

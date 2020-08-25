@@ -1,9 +1,6 @@
 package controler;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-
-import model.Layer;
 import model.Neuron;
 
 public class SigmoidUni implements Activable, Serializable {
@@ -25,12 +22,12 @@ public class SigmoidUni implements Activable, Serializable {
 
 		var e = Math.E;
 
-		double net = in;
+		double net = Math.round(in*100.0)/100.0;
 		//net = net*(-1);
 		
 		
 		
-		//System.out.println("NET= "+net);
+		//System.out.println("wejście do funkcji:      " + net);
 		//System.out.println("E= "+Math.E);
 		
 		

@@ -1,9 +1,6 @@
 package controler;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-
-import model.Layer;
 import model.Neuron;
 
 public class BinaryStepBi implements Activable, Serializable {
