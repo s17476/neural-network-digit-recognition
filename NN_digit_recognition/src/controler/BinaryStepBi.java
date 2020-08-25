@@ -19,16 +19,16 @@ public class BinaryStepBi implements Activable, Serializable {
 	 }
 
 	 @Override
-		public BigDecimal activate(BigDecimal in) {
-			if(in.compareTo(new BigDecimal(0)) >= 0)
-				return new BigDecimal(1);
-			return new BigDecimal(-1);
+		public double activate(double in) {
+			if(in >= 0)
+				return 1;
+			return -1;
 		}
 
 	@Override
-	public BigDecimal update(Neuron neuron, boolean isOut) {
+	public double update(Neuron neuron, boolean isOut) {
 		// TODO Auto-generated method stub
-		return null;
+		return 0;
 	}
 
 }

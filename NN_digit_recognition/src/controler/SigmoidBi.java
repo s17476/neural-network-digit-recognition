@@ -25,35 +25,35 @@ public class SigmoidBi implements Activable, Serializable {
 	  * z ałożenia lambda = 1
 	  */
 	@Override
-	public BigDecimal activate(BigDecimal in) {
+	public double activate(double in) {
 		var e = Math.E;
-		double net = Double.valueOf(in.toString());
+		double net = in;
 		net = net*(-1);
 		net = Math.pow(e, net);
 		net = net+1.d;
 		net = (2/net)-1;
 		
-		BigDecimal fNet = new BigDecimal(net);
+		double fNet = net;
 		//System.out.println("Sigma    wynik                           "+fNet);
 		return fNet;
 	}
 
 	@Override
-	public BigDecimal update(Neuron neuron, boolean isOut) {
-		BigDecimal fPrim = (neuron.getfNet().multiply(new BigDecimal(1).subtract(neuron.getfNet())));
+	public double update(Neuron neuron, boolean isOut) {
+		double fPrim = (neuron.getfNet()*(1-(neuron.getfNet())));
 		//neuron.setErrorFactor(fPrim.multiply(error));
 
-		BigDecimal[] tmpTab = new BigDecimal[neuron.getWeights().length];
-		BigDecimal result = new BigDecimal(0);
+		double[] tmpTab = new double[neuron.getWeights().length];
+		double result = 0;
 		for(int i = 0; i < neuron.getWeights().length; i++) {
 				//System.out.println("stara waga" +neuron.getWeights()[i]);
-				tmpTab[i] = neuron.getWeights()[i].add(neuron.getLearningRate().multiply(neuron.getErrorFactor().multiply(neuron.getInput()[i])));
+				tmpTab[i] = neuron.getWeights()[i]+(neuron.getLearningRate()*(neuron.getErrorFactor()*(neuron.getInput()[i])));
 		//		result.add(tmpTab[i].multiply(error));
 				//System.out.println("Nowa waga" +neuron.getWeights()[i]);
 			
 		}
 		neuron.setWeights(tmpTab);
-		if(neuron.getBias() != null) neuron.setBias(neuron.getBias().add(neuron.getLearningRate().multiply(neuron.getErrorFactor())));
+		if(neuron.getBias() != 0) neuron.setBias(neuron.getBias()+(neuron.getLearningRate()*(neuron.getErrorFactor())));
 
 		return result;
 	}

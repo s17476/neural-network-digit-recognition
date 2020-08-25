@@ -488,7 +488,7 @@ public class MainWindow extends JFrame {
 				currentNetwork = new NeuralNetwork(txtMyNeuralNetwork.getText(),
 													Integer.parseInt(comboBox.getSelectedItem().toString()),
 													Integer.parseInt(comboBox_1.getSelectedItem().toString()),
-													new BigDecimal(Double.parseDouble(textField_2.getText())).round(new MathContext(3)),
+													Double.parseDouble(textField_2.getText()),
 													(Activable)comboBox_2.getSelectedItem());
 				extension.add(currentNetwork);
 				DefaultListModel<NeuralNetwork> model = (DefaultListModel<NeuralNetwork>) list.getModel();

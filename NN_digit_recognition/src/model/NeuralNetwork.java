@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.stream.Stream;
 
 import controler.Activable;
@@ -19,21 +20,21 @@ public class NeuralNetwork implements Serializable{
 	private String name;
 	private Layer outputLayer;
 	private Layer[] hiddenLayers;
-	private int[] input = new int[17];
-	private BigDecimal learningRate;
+	private double[] input = new double[17];
+	private double learningRate;
 	private int networkSize;
 	private Activable function;
 	private int[] statistics = new int[10];
-	private BigDecimal totalError;
+	private double totalError;
 	
 	
 	
-	public NeuralNetwork(String name, int networkSize, int hiddenLayersSize, BigDecimal learningRate, Activable function) {
+	public NeuralNetwork(String name, int networkSize, int hiddenLayersSize, double learningRate, Activable function) {
 		this.name = name;
 		this.hiddenLayers = new Layer[networkSize];
 		this.hiddenLayers[0] = new Layer(function, hiddenLayersSize, 16, true, learningRate);
 		for(int i = 1; i < this.hiddenLayers.length; i++) {
-			this.hiddenLayers[i] = new Layer(function, hiddenLayersSize, hiddenLayersSize, learningRate);
+			this.hiddenLayers[i] = new Layer(function, hiddenLayersSize, hiddenLayersSize, true, learningRate);
 		}
 		this.outputLayer = new Layer(function, 10, hiddenLayersSize, learningRate);
 		this.learningRate = learningRate;
@@ -64,11 +65,11 @@ public class NeuralNetwork implements Serializable{
 		return hiddenLayers[hiddenLayers.length-1].getSize();
 	}
 
-	public int[] getInput() {
+	public double[] getInput() {
 		return input;
 	}
 
-	public BigDecimal getLearningRate() {
+	public double getLearningRate() {
 		return learningRate;
 	}
 	
@@ -109,38 +110,47 @@ public class NeuralNetwork implements Serializable{
 			
 			data.peek(System.out::println).forEach(line -> {
 
-				totalError = new BigDecimal(0);
+				totalError = 0;
 				boolean isOk = true;
-				input = Arrays.stream(line.split(",")).map(String::trim).mapToInt(Integer::parseInt).toArray();
-				
+				input = Arrays.stream(line.split(",")).map(String::trim).mapToDouble(Double::parseDouble).toArray();
+			
+				System.out.println("xxxxxxxxxxxxxxxxx   wejście                      xxxxxxxxxxxxxx"+input[0] +" "+ input[1] +" "+ input[2]);
 				//get results from input layer
-				BigDecimal[] results = hiddenLayers[0].test(input);
+				double[] results = hiddenLayers[0].test(input);
+				//System.out.println("1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"+results[0] +" "+ results[1] +" "+ results[2] +" "+ results[3] +" "+ results[4] +" "+ results[5] +" "+ results[6] +" "+ results[7]);
+				
 				
 				//get results from hidden layerss
 				for(int i = 1; i < hiddenLayers.length; i++) {
 					results = hiddenLayers[i].test(results);
-					System.out.println("res" + results[i]);
+		
 				}
-				
+				//System.out.println("2xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"+results[0] +" "+ results[1] +" "+ results[2] +" "+ results[3] +" "+ results[4] +" "+ results[5] +" "+ results[6] +" "+ results[7]);
 				// total result 
 				results = outputLayer.test(results);
-				
-				
+		
+				//System.out.println("3xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"+results[0] +" "+ results[1] +" "+ results[2] +" "+ results[3] +" "+ results[4] +" "+ results[5] +" "+ results[6] +" "+ results[7] +" "+ results[8] +" "+ results[9]);
 				
 				
 				double[] compareResult = new double[10];
-				compareResult[input[input.length-1]] = 1;
+				compareResult[(int) input[input.length-1]] = 1;
 				
 				
+				double max = results[0];
+				int index = 0;
 				for(int i = 0; i < results.length; i++) {
-					//System.out.println(results[i]+"  "+compareResult[i]);
-					if(results[i].intValue() != compareResult[i])
-						isOk = false;
+					if(results[i] > max) {
+						max = results[i];
+						index = i;
+					}
+					System.out.println(results[i]+"  "+compareResult[i]);
 				}
+				System.out.println("A to jest numer indexu :" + index);
 				
 				//System.out.println(input[input.length-1]+" wyniki niże");
-				if(isOk) {
-					statistics[input[input.length-1]]++;
+				if(compareResult[index] == 1) {
+					statistics[index]++;
+					results[index] = 1;
 					System.out.println("DDDDDDDDDDDDDDOOOOOOOOOOOOOOOOOOOOBBBBBBBBBBBRRRRRRRRRRRRRRRRRRRRRZZZZZZZZZZZZZZZZZEEEEEEEEEEEEEEE");
 				}
 				
@@ -152,65 +162,80 @@ public class NeuralNetwork implements Serializable{
 					double tmp = 0;
 					for(int i = 0; i < results.length; i++) {
 						
-						tmp =  Math.pow((compareResult[i]-results[i].doubleValue()), 2)/2;
+						tmp =  Math.pow((compareResult[i]-results[i]), 2)/2;
 						res += tmp;
-						outputLayer.getNeurons()[i].errorFactor = new BigDecimal(tmp);
+						outputLayer.getNeurons()[i].errorFactor = tmp;
 					}
-					totalError = new BigDecimal(res);
+					totalError = res;
 					System.out.println("Total error :                  "+totalError);
 					
 					//backpropagation 
+					double input;
 					
 					//output layer
+					//neutrons error
 					for(int i = 0; i < outputLayer.getNeurons().length; i++) {
-						BigDecimal tmpError = new BigDecimal(-((compareResult[i])-outputLayer.getNeurons()[i].getfNet().doubleValue())).multiply(outputLayer.getNeurons()[i].getfNet().multiply(new BigDecimal(1).subtract(outputLayer.getNeurons()[i].getfNet())));
-						//System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                    fNet output" + outputLayer.getNeurons()[i].getfNet());
-						//System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                    err" + tmpError);
-						outputLayer.getNeurons()[i].neuronError = tmpError;
-						for(int j = 0; j < outputLayer.getNeurons()[0].getWeights().length; j++) {
-							BigDecimal tmpWeight = outputLayer.getNeurons()[i].weights[j];
-							//System.out.println("Stara" + tmpWeight);
-							tmpWeight = tmpWeight.subtract(tmpError.multiply(learningRate.multiply(hiddenLayers[hiddenLayers.length-1].getNeurons()[j].getfNet())));
-							//System.out.println("nowa" + tmpWeight);
-						}
+						//neutron error
+						outputLayer.getNeurons()[i].neuronError = (compareResult[i] - outputLayer.getNeurons()[i].getfNet()) * (outputLayer.getNeurons()[i].getfNet())*(1-outputLayer.getNeurons()[i].getfNet());
+
+						
+						
+
+						
 					}
 					
 					//hidden
-					Layer tmpLayer = outputLayer;
+					//neutrons error
+					Layer nextLayer = outputLayer;
 					for(int i = hiddenLayers.length-1; i >= 0 ; i--) {
 						for(int j = 0; j < hiddenLayers[i].getNeurons().length; j++) {
+							hiddenLayers[i].getNeurons()[j].neuronError = 0;
+							for(int k = 0; k < nextLayer.getSize(); k++) {
 							
-							
-							BigDecimal[] tmpError = new BigDecimal[tmpLayer.getNeurons().length];
-							
-							for(int k = 0; k < tmpLayer.getNeurons().length; k++) {
-								tmpError[k] = tmpLayer.getNeurons()[k].neuronError;
-								//System.out.println("                           NEURON   BBBBBBBLLLLLLLLLLAAAAAAAAADDDDDDDDDDD    "+ tmpError[k]);
-								tmpError[k] = tmpError[k].multiply(tmpLayer.getNeurons()[k].getWeights()[j]);
-								//System.out.println("                              BBBBBBBLLLLLLLLLLAAAAAAAAADDDDDDDDDDD    "+ tmpError[k]);
+								hiddenLayers[i].getNeurons()[j].neuronError += (nextLayer.getNeurons()[k].neuronError * nextLayer.getNeurons()[k].getWeights()[j]);
 								
+								//System.out.println("NEXT layer neutron error" + nextLayer.getNeurons()[k].neuronError * nextLayer.getNeurons()[k].getWeights()[j]);
+							
 							}
-								BigDecimal s = new BigDecimal(0);
-								for(BigDecimal err : tmpError) {
-									s = s.add(err);
-								}
-								//System.out.println("               SUMA               BBBBBBBLLLLLLLLLLAAAAAAAAADDDDDDDDDDD    "+ s);
-								hiddenLayers[i].getNeurons()[j].neuronError = hiddenLayers[i].getNeurons()[j].getfNet().multiply(new BigDecimal(1).subtract(hiddenLayers[i].getNeurons()[j].getfNet()));
-								if(hiddenLayers[i].getNeurons()[j].neuronError.doubleValue() != 0)
-								System.out.println("                                                                                           AKTUALIZUJE");
-								BigDecimal input;
-								for(int k= 0; k < tmpLayer.getNeurons()[j].getWeights().length; k++) {
-									//System.out.println(i+ "  "+j+"    "+k);
-									System.out.println("               Stara              "+ hiddenLayers[i].getNeurons()[j].getWeights()[k]);
-									input = hiddenLayers[i].getNeurons()[j].getInput()[k];
-									hiddenLayers[i].neurons[j].weights[k] = hiddenLayers[i].getNeurons()[j].getWeights()[k].subtract(hiddenLayers[i].getNeurons()[j].neuronError.multiply(input)).multiply(s).multiply(learningRate);
-									System.out.println("               Nowa              "+ hiddenLayers[i].getNeurons()[j].getWeights()[k]);
-								}
-								
-								
+							
+							hiddenLayers[i].getNeurons()[j].neuronError *= (hiddenLayers[i].getNeurons()[j].getfNet())*(1-hiddenLayers[i].getNeurons()[j].getfNet());
+							
+							//System.out.println("hidden layer neutron error" + hiddenLayers[i].getNeurons()[j].neuronError);
 						}
-						tmpLayer = hiddenLayers[i];
+						nextLayer = hiddenLayers[i];
 					}
+					
+					
+					
+					//weights update
+					
+					for(int i = 0; i < hiddenLayers.length; i++) {
+						for(int j = 0; j < hiddenLayers[i].getNeurons().length; j++) {
+							for(int k = 0; k < hiddenLayers[i].getNeurons()[j].getWeights().length; k++) {
+								hiddenLayers[i].getNeurons()[j].getWeights()[k] = hiddenLayers[i].getNeurons()[j].getWeights()[k] + (getLearningRate() * hiddenLayers[i].getNeurons()[j].neuronError * hiddenLayers[i].layerInput[k]);
+								//System.out.println(getLearningRate() +" "+ hiddenLayers[i].getNeurons()[j].neuronError +" "+ hiddenLayers[i].layerInput[k]);
+								//System.out.println("kttualizacja output layer" + getLearningRate() * hiddenLayers[i].getNeurons()[j].neuronError * hiddenLayers[i].layerInput[k]);
+							}
+						}
+					}
+					
+					for(int j = 0; j < outputLayer.getNeurons().length; j++) {
+						for(int k = 0; k < outputLayer.getNeurons()[j].getWeights().length; k++) {
+							outputLayer.getNeurons()[j].getWeights()[k] = outputLayer.getNeurons()[j].getWeights()[k] + (getLearningRate() * outputLayer.getNeurons()[j].neuronError * outputLayer.layerInput[k]);
+							//System.out.println("kttualizacja hidden layer" + getLearningRate() * outputLayer.getNeurons()[j].neuronError * outputLayer.layerInput[k]);
+						}
+					}
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
 					
 					
 					

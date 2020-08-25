@@ -6,6 +6,6 @@ import model.Layer;
 import model.Neuron;
 
 public interface Activable {
-	public BigDecimal activate(BigDecimal in);
-	public BigDecimal update(Neuron neuron, boolean isOut);
+	public double activate(double in);
+	public double update(Neuron neuron, boolean isOut);
 }

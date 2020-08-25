@@ -3,6 +3,8 @@ package model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import controler.Activable;
 
@@ -13,101 +15,100 @@ public class Neuron implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 5182658550333819685L;
-	BigDecimal[] weights;
-	BigDecimal bias;
+	double[] weights;
+	double bias;
 	//to net
-	BigDecimal output;
+	double output;
 	//to po aktywacji
-	BigDecimal fNet;
-	public BigDecimal[] input;
-	BigDecimal learningRate;
+	double fNet;
+	public double[] input;
+	Double learningRate;
 
-	public BigDecimal neuronError;
-	BigDecimal errorFactor;
+	public double neuronError;
+	double errorFactor;
 	static int i = 0;
 	
-	public BigDecimal getBias() {
+	public double getBias() {
 		return bias;
 	}
 
 
 
-	public void setBias(BigDecimal bias) {
+	public void setBias(double bias) {
 		this.bias = bias;
 	}
 
 
-	public BigDecimal getLearningRate() {
+	public double getLearningRate() {
 		return learningRate;
 	}
 
 
 
-	public void setLearningRate(BigDecimal learningRate) {
+	public void setLearningRate(double learningRate) {
 		this.learningRate = learningRate;
 	}
 
-	public BigDecimal[] getWeights() {
+	public double[] getWeights() {
 		return weights;
 	}
 
 
 
-	public void setWeights(BigDecimal[] weights) {
+	public void setWeights(double[] weights) {
 		this.weights = weights;
 	}
-	public BigDecimal[] getInput() {
+	public double[] getInput() {
 		return input;
 	}
 
 
 
-	public void setInput(BigDecimal[] input) {
+	public void setInput(double[] input) {
 		this.input = input;
 	}
 
 
 
-	public BigDecimal getfNet() {
+	public double getfNet() {
 		return fNet;
 	}
 
 
 
-	public void setfNet(BigDecimal fNet) {
+	public void setfNet(double fNet) {
 		this.fNet = fNet;
 	}
 
 	
-	public BigDecimal getErrorFactor() {
+	public double getErrorFactor() {
 		return errorFactor;
 	}
 
 
 
-	public void setErrorFactor(BigDecimal errorFactor) {
+	public void setErrorFactor(double errorFactor) {
 		this.errorFactor = errorFactor;
 	}
 
 	Activable function;
 	
-	private Neuron(Activable function, int weightsSize, boolean bias, BigDecimal learningRate){
-		this.neuronError = new BigDecimal(0);
+	private Neuron(Activable function, int weightsSize, boolean bias, double learningRate){
+		this.neuronError = 0;
 		this.function = function;
 		this.learningRate = learningRate;
-		this.weights = new BigDecimal[weightsSize];
+		this.weights = new double[weightsSize];
 		for(int i = 0; i < weights.length; i++) {
-			weights[i] = generateRandomBigDecimalFromRange(
-				    new BigDecimal(-1),
-				    new BigDecimal(1)////////////////////.setScale(2)
-					).round(new MathContext(4));
+			double random = new Random().nextDouble();
+			double result = ((int)(random * (5)))/100d;
+			weights[i] = result;
 			//System.out.println("To losowe: " + weights[i]);
 		}
-		if(bias)
-			this.bias = generateRandomBigDecimalFromRange(
-				    new BigDecimal(-1),
-				    new BigDecimal(1)////////////////////.setScale(2)
-					).round(new MathContext(4));
+		if(bias) {
+			double random = new Random().nextDouble();
+			double result = ((int)(random * (5)))/100d;
+			this.bias = result;
+		}
 	}
 	
 
@@ -118,76 +119,79 @@ public class Neuron implements Serializable{
 	
 	public String toString() {
 		String result = "Wagi:\n";
-		for(BigDecimal weight : weights) {
+		for(double weight : weights) {
 			result += weight + "\n";
 		}
 		result += bias + "\n";
 		return result;
 	}
 	
-	public static Neuron[] createNeurons(Activable function, int size, int hiddenLayersSize, boolean bias, BigDecimal learningRate) {
+	public static Neuron[] createNeurons(Activable function, int size, int hiddenLayersSize, boolean bias, double learningRate) {
 		Neuron[] result = new Neuron[size];
 		for(int i = 0; i < result.length; i++) {
 			result[i] = new Neuron(function, hiddenLayersSize, bias, learningRate);
 			System.out.println(result[i] + "nowy neuron\n\n");
 		}
-		System.out.println(result[0] + "nowy neuron w nowej tablicy\n\n");
+		//System.out.println(result[0] + "nowy neuron w nowej tablicy\n\n");
 		return result;
 	}
 	
-	public void setOutput(BigDecimal out) {
+	public void setOutput(double out) {
 		output = out;
 	}
 	
-	public BigDecimal getOutput() {
+	public double getOutput() {
 		return output;
 	}
 	
-	public void setError(BigDecimal error) {
+	public void setError(double error) {
 		neuronError = error;
 	}
 	
-	public BigDecimal getError() {
+	public double getError() {
 		return neuronError;
 	}
 	
-	public BigDecimal test(int[] input) {
-		BigDecimal[] tmpTab = new BigDecimal[input.length];
+	public double test(int[] input) {
+		double[] tmpTab = new double[input.length];
 		for(int i = 0; i < input.length; i++) {
-			tmpTab[i] = new BigDecimal(input[i]);
+			tmpTab[i] = input[i];
 			
 		}
 		return test(tmpTab);
 	}
 	
-	public BigDecimal test(BigDecimal[] input) {
+	public double test(double[] input) {
+		//for(int i = 0; i < input.length-1; i++)
+			//input[i]/=100.d;
 		this.input = input;
-		output = new BigDecimal(0);
-		BigDecimal tmp;
+		//System.out.println("xxxxxxxxxxxxxx        input xxxxxxxx"+input[0] +" "+ input[1] +" "+ input[2] +" "+ input[3]);
+		//System.out.println("xxxxxxxxxxxxxx        input wagi"+weights[0] +" "+ weights[1] +" "+ weights[2] +" "+ weights[3]+" "+weights[5] +" "+ weights[6]);
+		output = 0;
+		double tmp;
 		for (int i = 0; i < weights.length; i++) {
-			tmp = weights[i].multiply(input[i]);
+			//System.out.println("to" + weights[i] + " mnoże razy to " + input[i]);
+			tmp = weights[i]*(input[i]);
+			output += tmp;
+			//System.out.println("\n\n"+tmp+" total: "+ output);
 			
-			output = output.add(tmp);
 			
 		}
 		
-		if(bias != null) output.add(bias);
-		
+		if(bias != 0) output += bias;
+		//System.out.println("xxxxxxxxxxxxxx        output xxxxxxxx"+output);
 		
 		
 		fNet =  function.activate(output);
 		//System.out.println("Zwraca nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnneeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeettttttttttttttttttttttttttttttttttttttttttttttttt" + fNet);
 		//zwraca aktywowany net
+		
 		return fNet;
 	}
 	
-	public BigDecimal teach(boolean isOut) {
-		if(isOut)
-					function.update(this, isOut);////////////warstwy
-		else
-			neuronError = neuronError.add(function.update(this, isOut));
-				//System.out.println("Nowa"+neurons[i].getWeights()[i]);
-		return null;
+	public double teach(boolean isOut) {
+		
+		return 0;
 		//else
 		//return function.update(error, this, isOut);
 	}

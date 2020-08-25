@@ -19,19 +19,16 @@ public class BinaryStepUni implements Activable, Serializable {
 	 }
 
 	@Override
-	public BigDecimal activate(BigDecimal in) {
-		if(in.compareTo(new BigDecimal(0)) >= 0)
-			return new BigDecimal(1);
-		return new BigDecimal(0);
+	public double activate(double in) {
+		if(in >= 0)
+			return 1;
+		return 0;
 	}
 
 	@Override
-	public BigDecimal update(Neuron neuron, boolean isOut) {//////////////////////////////////////co jeśli error =0
-		for(int i =0; i < neuron.getWeights().length; i++) {
-			neuron.getWeights()[i] = neuron.getWeights()[i].add(neuron.getLearningRate().multiply(neuron.neuronError).multiply(neuron.input[i]));
-		}
-		
-		return null;
+	public double update(Neuron neuron, boolean isOut) {//////////////////////////////////////co jeśli error =0
+
+		return 0;
 	}
 
 }
