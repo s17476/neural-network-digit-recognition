@@ -110,7 +110,7 @@ public class NeuralNetwork implements Serializable{
 				boolean isOk = true;
 				input = Arrays.stream(line.split(",")).map(String::trim).mapToDouble(Double::parseDouble).toArray();
 			
-				System.out.println("xxxxxxxxxxxxxxxxx   wejście                      xxxxxxxxxxxxxx"+input[0] +" "+ input[1] +" "+ input[2]);
+				//System.out.println("xxxxxxxxxxxxxxxxx   wejście                      xxxxxxxxxxxxxx"+input[0] +" "+ input[1] +" "+ input[2]);
 				//get results from input layer
 				double[] results = hiddenLayers[0].test(input);
 				//System.out.println("1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"+results[0] +" "+ results[1] +" "+ results[2] +" "+ results[3] +" "+ results[4] +" "+ results[5] +" "+ results[6] +" "+ results[7]);
@@ -141,7 +141,7 @@ public class NeuralNetwork implements Serializable{
 					}
 					System.out.println(results[i]+"  "+compareResult[i]);
 				}
-				System.out.println("A to jest numer indexu :" + index);
+				//System.out.println("A to jest numer indexu :" + index);
 				
 				//System.out.println(input[input.length-1]+" wyniki niże");
 				if(compareResult[index] == 1) {
@@ -210,7 +210,7 @@ public class NeuralNetwork implements Serializable{
 							for(int k = 0; k < hiddenLayers[i].getNeurons()[j].getWeights().length; k++) {
 								hiddenLayers[i].getNeurons()[j].getWeights()[k] = hiddenLayers[i].getNeurons()[j].getWeights()[k] + (getLearningRate() * hiddenLayers[i].getNeurons()[j].neuronError * hiddenLayers[i].layerInput[k]);
 								//System.out.println(getLearningRate() +" "+ hiddenLayers[i].getNeurons()[j].neuronError +" "+ hiddenLayers[i].layerInput[k]);
-								//System.out.println("kttualizacja output layer" + getLearningRate() * hiddenLayers[i].getNeurons()[j].neuronError * hiddenLayers[i].layerInput[k]);
+								//System.out.println("kttualizacja " + getLearningRate() * hiddenLayers[i].getNeurons()[j].neuronError * hiddenLayers[i].layerInput[k] + " layer nr " + i);
 							}
 						}
 					}
